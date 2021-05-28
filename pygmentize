@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+. "$(dirname -- "$0")/pygmentize.env" 2>/dev/null || true
+: "${PYGMENTIZE_HOST:=localhost}"
+: "${PYGMENTIZE_PORT:=7879}"
+
+# curl can’t mix query params with POST data,
+# so we first encode the query and get the effective URL,
+# then make the actual POST of stdin to that URL
+
+args=()
+for arg; do
+    args+=(--data-urlencode "args=$arg")
+done
+
+# don’t actually connect, just write out the encoded URL
+url=$(
+    curl -s \
+         --connect-to "$PYGMENTIZE_HOST:$PYGMENTIZE_PORT:localhost:0" \
+         --write-out '%{url_effective}' \
+         -G \
+         "${args[@]}" \
+         "http://$PYGMENTIZE_HOST:$PYGMENTIZE_PORT/"
+   )
+
+exec curl -f --data-binary @- -H 'Content-Type: text/plain' "$url"
