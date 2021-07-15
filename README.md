@@ -6,8 +6,8 @@ and a shell script to implement `pygmentize` using that server.
 The project is inspired by [Khan/pygments-server][];
 the main difference is that it supports all `pygmentize` options,
 because it wraps pygments’ command line module rather than its Python API.
-(Naturally, the options to specify input and output files won’t be very useful to you
-unless the script and the server run on the same file system.)
+(However, it does not support reading any files,
+since that would not be useful if the script and server run on different file systems.)
 
 ## Server usage
 
@@ -33,6 +33,10 @@ you can run it using any WSGI server, such as:
   uwsgi --processes 4 --http :7879 --wsgi-file app.py --callable app
   ```
 
+Try to set up the server in such a way that it doesn’t have read access to any files that should not be public.
+`pygments-server` attempts to prevent pygments from reading any files,
+but you shouldn’t rely on that alone as protection from attackers pygmentizing `/etc/shadow` or the like.
+
 ## Client usage
 
 The `pygmentize` script included here is a drop-in replacement for the real one.
@@ -57,7 +61,7 @@ All command line arguments, as well as standard input and output, are transferre
 Things that are not transferred include:
 
 - Local files which may be specified as input or output files.
-  It’s strongly recommended to rely on stdin/stdout.
+  You must use stdin/stdout.
 - The standard error stream.
   Any errors will probably end up in your WSGI server’s logs.
 - The exit code.
