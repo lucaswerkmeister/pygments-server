@@ -58,6 +58,9 @@ The script will attempt to read from standard input regardless of command-line o
 since the command line will only be parsed on the server.
 If you don’t need to use standard input,
 you can skip this by setting the `PYGMENTIZE_NO_STDIN` environment variable (to any value).
+When reading standard input from a terminal,
+the script will also print a note (to avoid confusing users),
+which you can suppress with the `PYGMENTIZE_NO_STDIN_WARNING` environment variable.
 
 ## Limitations
 

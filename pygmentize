@@ -30,6 +30,9 @@ url=$(
    )
 
 if [[ ! -v PYGMENTIZE_NO_STDIN ]]; then
+    if [[ -t 0 && -t 2 && ! -v PYGMENTIZE_NO_STDIN_WARNING ]]; then
+        printf >&2 '%s: reading from stdin (press Ctrl+D to terminate)...\n' "$0"
+    fi
     files+=(-F 'file=@/dev/stdin;filename=/dev/stdin')
 fi
 
