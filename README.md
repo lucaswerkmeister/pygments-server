@@ -6,8 +6,7 @@ and a shell script to implement `pygmentize` using that server.
 The project is inspired by [Khan/pygments-server][];
 the main difference is that it supports all `pygmentize` options,
 because it wraps pygments’ command line module rather than its Python API.
-(However, it does not support reading any files,
-since that would not be useful if the script and server run on different file systems.)
+It also supports input files in addition to standard input.
 
 ## Server usage
 
@@ -34,7 +33,7 @@ you can run it using any WSGI server, such as:
   ```
 
 Try to set up the server in such a way that it doesn’t have read access to any files that should not be public.
-`pygments-server` attempts to prevent pygments from reading any files,
+`pygments-server` attempts to prevent pygments from reading any files on the server,
 but you shouldn’t rely on that alone as protection from attackers pygmentizing `/etc/shadow` or the like.
 
 ## Client usage
@@ -55,15 +54,29 @@ PYGMENTIZE_PORT=1234
 
 Either line can be left out if you want to use the default.
 
+
 ## Limitations
 
-All command line arguments, as well as standard input and output, are transferred between client and server.
-Things that are not transferred include:
+The following things are transferred between client and server:
 
-- Local files which may be specified as input or output files.
-  You must use stdin/stdout.
-- The standard error stream.
+- All command line arguments (client to server).
+- Standard input (client to server) and standard output (server to client).
+- Input files (client to server).
+  Specifically, for any command line argument that exists as a file,
+  the contents of the file are made available to the server.
+  The wrapper script doesn’t know which of these arguments will actually be read as files by pygments
+  (e.g. if you use `-l sh` and the current working directory is `/bin`,
+  the contents of `/bin/sh` will be sent to the server);
+  for the same reason, any files which aren’t listed as separate arguments
+  (e.g. some kind of `--input=filename` option)
+  won’t be transferred either.
+
+The following things are not transferred between client and server:
+
+- Standard error (server to client).
   Any errors will probably end up in your WSGI server’s logs.
+- Any output files (server to client).
+  You must use stdout for output.
 - The exit code.
   The script exits 0 unless `curl` had an error.
 - Environment variables.

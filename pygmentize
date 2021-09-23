@@ -9,8 +9,14 @@
 # then make the actual POST of stdin to that URL
 
 args=()
+files=()
 for arg; do
     args+=(--data-urlencode "args=$arg")
+    if [[ -f $arg ]]; then
+        file=${arg//'\'/'\\'}
+        file=${arg//'"'/'\"'}
+        files+=(-F "file=@\"$file\";filename=\"$file\"")
+    fi
 done
 
 # don’t actually connect, just write out the encoded URL
@@ -23,4 +29,4 @@ url=$(
          "http://$PYGMENTIZE_HOST:$PYGMENTIZE_PORT/"
    )
 
-exec curl -f --data-binary @- -H 'Content-Type: text/plain' "$url"
+exec curl -f "${files[@]}" "$url"

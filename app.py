@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from errno import ENOENT
 import io
+from os import strerror
 import sys
 
 import flask
@@ -26,12 +28,13 @@ class AnyIO(io.IOBase):
         return self.bytes_io.getvalue()
 
 
-def no_open(file, mode='r', *args, **kwargs):
-    """Fake open() function that always return empty objects."""
-    if 'b' in mode:
-        return io.BytesIO()
-    else:
-        return io.StringIO()
+def request_open(file, *args, **kwargs):
+    """Fake open() function that returns a matching file
+       from the flask request. (The mode is ignored.)"""
+    for request_file in flask.request.files.getlist('file'):
+        if request_file.filename == file:
+            return request_file.stream
+    raise FileNotFoundError(ENOENT, strerror(ENOENT))
 
 
 real_open = open
@@ -43,11 +46,11 @@ app = flask.Flask(__name__)
 @app.post('/')
 def index():
     try:
-        sys.stdin = io.BytesIO(flask.request.data)
+        sys.stdin = request_open('/dev/stdin')
         sys.stdin.buffer = sys.stdin
         sys.stdout = AnyIO()
         sys.stdout.buffer = sys.stdout
-        __builtins__['open'] = no_open
+        __builtins__['open'] = request_open
 
         args = flask.request.args.getlist('args')
         pygments.cmdline.main(['pygmentize', *args])
