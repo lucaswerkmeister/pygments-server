@@ -54,6 +54,10 @@ PYGMENTIZE_PORT=1234
 
 Either line can be left out if you want to use the default.
 
+The script will attempt to read from standard input regardless of command-line options,
+since the command line will only be parsed on the server.
+If you don’t need to use standard input,
+you can skip this by setting the `PYGMENTIZE_NO_STDIN` environment variable (to any value).
 
 ## Limitations
 

@@ -29,4 +29,8 @@ url=$(
          "http://$PYGMENTIZE_HOST:$PYGMENTIZE_PORT/"
    )
 
+if [[ ! -v PYGMENTIZE_NO_STDIN ]]; then
+    files+=(-F 'file=@/dev/stdin;filename=/dev/stdin')
+fi
+
 exec curl -f "${files[@]}" "$url"
