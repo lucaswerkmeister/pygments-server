@@ -30,10 +30,16 @@ class AnyIO(io.IOBase):
 
 def request_open(file, *args, **kwargs):
     """Fake open() function that returns a matching file
-       from the flask request. (The mode is ignored.)"""
+       from the flask request. (The mode is ignored.)
+
+       If there is no matching file, for files below sys.path,
+       perform a real open; otherwise, report file not found."""
     for request_file in flask.request.files.getlist('file'):
         if request_file.filename == file:
             return request_file.stream
+    for path in sys.path:
+        if file.startswith(path + '/'):
+            return real_open(file, *args, **kwargs)
     raise FileNotFoundError(ENOENT, strerror(ENOENT))
 
 
