@@ -77,6 +77,7 @@ The following things are transferred between client and server:
   for the same reason, any files which aren’t listed as separate arguments
   (e.g. some kind of `--input=filename` option)
   won’t be transferred either.
+- The boolean status of the exit code (zero or nonzero).
 
 The following things are not transferred between client and server:
 
@@ -84,8 +85,11 @@ The following things are not transferred between client and server:
   Any errors will probably end up in your WSGI server’s logs.
 - Any output files (server to client).
   You must use stdout for output.
-- The exit code.
-  The script exits 0 unless `curl` had an error.
+- The exact exit code.
+  If pygments returns a nonzero exit code,
+  the server returns HTTP 500 Internal Server Error,
+  which makes `curl` exit with status 22.
+  Any other nonzero exit status from the script signifies some other `curl` error.
 - Environment variables.
   Hopefully you’re using `-fhtml` and not relying on the `$TERM` variable.
 

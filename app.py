@@ -59,9 +59,9 @@ def index():
         __builtins__['open'] = request_open
 
         args = flask.request.args.getlist('args')
-        pygments.cmdline.main(['pygmentize', *args])
+        status = pygments.cmdline.main(['pygmentize', *args])
 
-        return sys.stdout.getvalue()
+        return sys.stdout.getvalue(), (500 if status else 200)
     finally:
         sys.stdin = sys.__stdin__
         sys.stdout = sys.__stdout__
