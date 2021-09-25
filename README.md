@@ -90,7 +90,7 @@ The following things are not transferred between client and server:
   the server returns HTTP 500 Internal Server Error,
   which makes `curl` exit with status 22.
   Any other nonzero exit status from the script signifies some other `curl` error.
-- Environment variables.
+- Environment variables (client to server).
   Hopefully you’re using `-fhtml` and not relying on the `$TERM` variable.
 
 Some of these are probably fixable with more or less effort,
