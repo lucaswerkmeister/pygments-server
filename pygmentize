@@ -14,7 +14,7 @@ for arg; do
     args+=(--data-urlencode "args=$arg")
     if [[ -f $arg ]]; then
         file=${arg//'\'/'\\'}
-        file=${arg//'"'/'\"'}
+        file=${file//'"'/'\"'}
         files+=(-F "file=@\"$file\";filename=\"$file\"")
     fi
 done
