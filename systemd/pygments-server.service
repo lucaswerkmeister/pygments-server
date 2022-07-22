@@ -1,0 +1,23 @@
+[Unit]
+Description=pygments-server gunicorn pygmentize daemon
+Requires=pygments-server.socket
+After=network.target
+
+[Service]
+Type=notify
+# the specific user that our service will run as
+User=$USER
+Group=$USER
+# another option for an even more restricted service is
+# DynamicUser=yes
+# see http://0pointer.net/blog/dynamic-users-with-systemd.html
+RuntimeDirectory=pygments-server
+WorkingDirectory=$PWD
+ExecStart=$GUNICORN --workers=$WORKERS --bind=:$PORT app:app
+ExecReload=/bin/kill -s HUP \$MAINPID
+KillMode=mixed
+TimeoutStopSec=15
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
