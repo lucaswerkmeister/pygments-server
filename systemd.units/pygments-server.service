@@ -6,15 +6,15 @@ After=network.target
 [Service]
 Type=notify
 # the specific user that our service will run as
-User=$USER
-Group=$USER
+User=$SERVICE_USER
+Group=$SERVICE_USER
 # another option for an even more restricted service is
 # DynamicUser=yes
 # see http://0pointer.net/blog/dynamic-users-with-systemd.html
 RuntimeDirectory=pygments-server
-WorkingDirectory=$PWD
-ExecStart=$GUNICORN --workers=$WORKERS --bind=:$PORT app:app
-ExecReload=/bin/kill -s HUP \$MAINPID
+WorkingDirectory=$SERVICE_WORK_DIR
+ExecStart=$GUNICORN --workers=$GUNICORN_WORKERS --bind=:$PYGMENTIZE_PORT app:app
+ExecReload=/bin/kill -s HUP $MAINPID_WA
 KillMode=mixed
 TimeoutStopSec=15
 PrivateTmp=true
