@@ -55,16 +55,16 @@ user_dialog && cat systemd.units/pygments-server.socket | envsubst | sudo tee /e
 echo -e "\n**\nEnable the service 'systemctl daemon-reload && systemctl enable --now pygments-server.socket'"
 user_dialog && sudo systemctl daemon-reload && sudo systemctl enable --now pygments-server.socket
 
-echo -e "\n**\nCreate connector 'cp "${SERVICE_WORK_DIR}/systemd.pygmentize" /usr/local/bin/pygmentize'"
+echo -e "\n**\nCreate connector 'cp ${SERVICE_WORK_DIR}/systemd.pygmentize /usr/local/bin/pygmentize'"
 FINAL_MESSAGE="\n**\nYou are ready to use: /usr/local/bin/pygmentize\nFor MediaWiki use: \$wgPygmentizePath = \"/usr/local/bin/pygmentize\";"
 if [[ -f /usr/local/bin/pygmentize ]]
 then
 	echo "The file '/usr/local/bin/pygmentize' already exists and will be replaced."
-	user_dialog && sudo rm /usr/local/bin/pygmentize && \
-	sudo cp "${SERVICE_WORK_DIR}/systemd.pygmentize" /usr/local/bin/pygmentize && \
+	user_dialog && sudo cp -f systemd.pygmentize /usr/local/bin/pygmentize && \
+	{ [[ -f pygmentize.env ]] && sudo cp -f pygmentize.env /usr/local/bin/pygmentize.env; } && \
 	echo -e "$FINAL_MESSAGE"	
-
 else
-	user_dialog && sudo cp "${SERVICE_WORK_DIR}/systemd.pygmentize" /usr/local/bin/pygmentize && \
+	user_dialog && sudo cp systemd.pygmentize /usr/local/bin/pygmentize && \
+	{ [[ -f pygmentize.env ]] && sudo cp -f pygmentize.env /usr/local/bin/pygmentize.env; } && \
 	echo -e "$FINAL_MESSAGE"
 fi

@@ -99,11 +99,7 @@ should the need for it arise.
 
 ## Systemd service deployment
 
-The script [`systemd.deploy.sh`](systemd.deploy.sh) will create a systemd service file and a socket file and will enable the socket. Initially it will install the depends. The service uses `gunicorn`, so if it is available the existing installation will be used, otherwise you will be asked to install it. I will recommend to use an OS package for `gunicorn` if it is available - i.e. `apt install gunicorn`. Finally the script will create `/usr/local/bin/pygmentize` as a copy of the file [`systemd.pygmentize`](systemd.pygmentize).
-
-The service will be created for the current user who possess the repository. All environment variables will detected automatically, however you can override them via the `pygmentize.env` file. For example if you want to change the number of the workers to `2` set `GUNICORN_WORKERS=2`. For the rest parameters available see the beginning of the `systemd.deploy.sh` file.
-
-Note the files in the directory [`systemd.units/`](systemd.units/) are just templates and the actual values will be assigned via the deployment script. So if you want to change something add the necessary parameters to the `pygmentize.env` file and rerun `systemd.deploy.sh`.
+The script [`systemd.deploy.sh`](systemd.deploy.sh) will create a systemd service file and a socket file for you - for more details read the [systemd.units/README.md](systemd.units/README.md) file.
 
 ## License
 
